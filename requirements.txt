@@ -1,0 +1,14 @@
+pandas
+requests
+google-play-scraper
+beautifulsoup4
+tqdm
+scikit-learn
+spacy
+transformers
+sentence-transformers
+psycopg2-binary
+sqlalchemy
+matplotlib
+wordcloud
+pytest
