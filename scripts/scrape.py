@@ -12,8 +12,8 @@ def scrape_reviews(bank_name, app_id, count=600):
     result, _ = reviews(
         app_id,
         lang='en', 
-        country='us', # Country
-        sort=Sort.NEWEST, # Get latest reviews
+        country='et', 
+        sort=Sort.NEWEST, 
         count=count
     )
     df = pd.DataFrame(result)
