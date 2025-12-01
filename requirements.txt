@@ -12,3 +12,4 @@ sqlalchemy
 matplotlib
 wordcloud
 pytest
+torch
