@@ -67,22 +67,29 @@ def run_thematic_analysis():
         themes_output[bank] = bank_themes
 
     # Save all themes
-    print(f"Saving themes to {OUTPUT_THEMES} ...")
-    with open(OUTPUT_THEMES, "w", encoding="utf-8") as f:
-        json.dump(themes_output, f, indent=2)
+    print("Merging cluster assignments for all banks...")
 
-    print("Merging themes back into main dataset...")
-    df = pd.read_csv(INPUT_PATH)
+    all_banks = []
 
-    merged = df.merge(
-        pd.concat([df[df["bank"] == b].reset_index(drop=True)
-                   .assign(theme_cluster=pd.read_csv(OUTPUT_THEMES))
-                   for b in df["bank"].unique()]),
-        how="left"
-    )
+    for bank in df["bank"].unique():
+        bank_df = df[df["bank"] == bank].reset_index(drop=True)
+        texts = bank_df["review"].astype(str).tolist()
 
+        # Recompute embeddings and clusters (same as before)
+        embeddings = model.encode(texts, show_progress_bar=True)
+        kmeans = KMeans(n_clusters=3, random_state=42)
+        clusters = kmeans.fit_predict(embeddings)
+
+        bank_df["theme_cluster"] = clusters
+        all_banks.append(bank_df)
+
+    # Combine all banks into one final DF
+    merged = pd.concat(all_banks, ignore_index=True)
+
+    # Save final dataset
     merged.to_csv(OUTPUT_FINAL, index=False)
     print(f"DONE → saved {OUTPUT_FINAL}")
+
 
 if __name__ == "__main__":
     run_thematic_analysis()
